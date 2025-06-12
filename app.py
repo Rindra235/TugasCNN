@@ -5,8 +5,19 @@ from PIL import Image
 import os
 
 # Load trained model
-model = tf.keras.models.load_model('damage_classification_model.h5')
+import requests
+import tempfile
 
+def load_model_from_gdrive(file_id):
+    url = f'https://drive.google.com/uc?export=download&id={file_id}'
+    response = requests.get(url)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".h5") as tmp:
+        tmp.write(response.content)
+        return tf.keras.models.load_model(tmp.name)
+
+# Pakai FILE_ID kamu
+FILE_ID = '1GNZWmUVZz3FiULlezUdCpxyzKgry0ceY'
+model = load_model_from_gdrive(FILE_ID)
 # Kelas sesuai urutan output model
 class_names = ['01-minor', '02-moderate', '03-severe']
 
